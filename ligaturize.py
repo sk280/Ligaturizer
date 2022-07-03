@@ -21,27 +21,44 @@ COPYRIGHT = '''
 Programming ligatures added by Ilya Skriblovsky from FiraCode
 FiraCode Copyright (c) 2015 by Nikita Prokopov'''
 
-def get_ligature_source(fontname):
+def get_font_sources(fontname, fonts):
     # Become case-insensitive
     fontname = fontname.lower()
     for weight in ['Bold', 'Retina', 'Medium', 'Regular', 'Light']:
         if fontname.endswith('-' + weight.lower()):
             # Exact match for one of the Fira Code weights
-            return 'fonts/fira/distr/otf/FiraCode-%s.otf' % weight
+            return fonts["weight"] % weight
 
     # No exact match. Guess that we want 'Bold' if the font name has 'bold' or
     # 'heavy' in it, and 'Regular' otherwise.
     if 'bold' in fontname or 'heavy' in fontname:
-        return 'fonts/fira/distr/otf/FiraCode-Bold.otf'
-    return 'fonts/fira/distr/otf/FiraCode-Regular.otf'
+        return fonts["bold"]
+    return fonts["regular"]
+
+def get_ligature_source(fontname):
+    ligature_fonts = {
+        'weight': 'fonts/fira/distr/otf/FiraCode-%s.otf',
+        'bold': 'fonts/fira/distr/otf/FiraCode-Bold.otf',
+        'regular': 'fonts/fira/distr/otf/FiraCode-Regular.otf'
+    }
+    return get_font_sources(fontname, ligature_fonts)
+
+def get_character_source(fontname):
+    character_fonts = {
+        'weight': 'fonts/Lilex/otf/Lilex-%s.otf',
+        'bold': 'fonts/Lilex/otf/Lilex-Bold.otf',
+        'regular': 'fonts/Lilex/otf/Lilex-Regular.otf'
+    }
+    return get_font_sources(fontname, character_fonts)
 
 class LigatureCreator(object):
 
-    def __init__(self, font, firacode,
+    def __init__(self, font, firacode, charfont,
                  scale_character_glyphs_threshold,
                  copy_character_glyphs):
         self.font = font
         self.firacode = firacode
+        self.charfont = charfont
         self.scale_character_glyphs_threshold = scale_character_glyphs_threshold
         self.should_copy_character_glyphs = copy_character_glyphs
         self._lig_counter = 0
@@ -101,9 +118,9 @@ class LigatureCreator(object):
         print("    ...copying %d character glyphs..." % (len(chars)))
 
         for char in chars:
-            self.firacode.selection.none()
-            self.firacode.selection.select(char)
-            self.firacode.copy()
+            self.charfont.selection.none()
+            self.charfont.selection.select(char)
+            self.charfont.copy()
             self.font.selection.none()
             self.font.selection.select(char)
             self.font.paste()
@@ -247,12 +264,15 @@ def update_font_metadata(font, new_name):
     replace_sfnt(font, 'Family', new_name)
     replace_sfnt(font, 'WWS Family', new_name)
 
-def ligaturize_font(input_font_file, output_dir, ligature_font_file,
+def ligaturize_font(input_font_file, output_dir, ligature_font_file, character_font_file,
                     output_name, prefix, **kwargs):
     font = fontforge.open(input_font_file)
 
     if not ligature_font_file:
         ligature_font_file = get_ligature_source(font.fontname)
+
+    if not character_font_file:
+        character_font_file = get_character_source(font.fontname)
 
     if output_name:
         name = output_name
@@ -266,7 +286,10 @@ def ligaturize_font(input_font_file, output_dir, ligature_font_file,
     print('    ...using ligatures from %s' % ligature_font_file)
     firacode = fontforge.open(ligature_font_file)
 
-    creator = LigatureCreator(font, firacode, **kwargs)
+    print('    ...using characters from %s' % character_font_file)
+    charfont = fontforge.open(character_font_file)
+
+    creator = LigatureCreator(font, firacode, charfont, **kwargs)
     ligature_length = lambda lig: len(lig['chars'])
     for lig_spec in sorted(ligatures, key = ligature_length):
         try:
@@ -298,12 +321,18 @@ def parse_args():
     parser.add_argument("input_font_file",
         help="The TTF or OTF font to add ligatures to.")
     parser.add_argument("--output-dir",
+        type=str, default='.',
         help="The directory to save the ligaturized font in. The actual filename"
              " will be automatically generated based on the input font name and"
              " the --prefix and --output-name flags.")
     parser.add_argument("--ligature-font-file",
         type=str, default='', metavar='PATH',
         help="The file to copy ligatures from. If unspecified, ligaturize will"
+             " attempt to pick a suitable one from fonts/fira/distr/otf/ based on the input"
+             " font's weight.")
+    parser.add_argument("--character-font-file",
+        type=str, default='', metavar='PATH',
+        help="The file to copy characters from. If unspecified, ligaturize will"
              " attempt to pick a suitable one from fonts/fira/distr/otf/ based on the input"
              " font's weight.")
     parser.add_argument("--copy-character-glyphs",
