@@ -53,7 +53,7 @@ def get_character_source(fontname):
 
 class LigatureCreator(object):
 
-    def __init__(self, font, firacode, charfont,
+    def __init__(self, font, firacode, charfont, copy_only_characters,
                  scale_character_glyphs_threshold,
                  copy_character_glyphs):
         self.font = font
@@ -61,6 +61,7 @@ class LigatureCreator(object):
         self.charfont = charfont
         self.scale_character_glyphs_threshold = scale_character_glyphs_threshold
         self.should_copy_character_glyphs = copy_character_glyphs
+        self.should_copy_only_characters = copy_only_characters
         self._lig_counter = 0
 
         # Scale firacode to correct em height.
@@ -150,6 +151,9 @@ class LigatureCreator(object):
 
         if not self.copy_ligature_from_source(firacode_ligature_name):
             # Ligature not in source font.
+            return
+
+        if  self.should_copy_only_characters:
             return
 
         self._lig_counter += 1
@@ -265,6 +269,7 @@ def update_font_metadata(font, new_name):
     replace_sfnt(font, 'WWS Family', new_name)
 
 def ligaturize_font(input_font_file, output_dir, ligature_font_file, character_font_file,
+                    copy_only_characters,
                     output_name, prefix, **kwargs):
     font = fontforge.open(input_font_file)
 
@@ -289,7 +294,7 @@ def ligaturize_font(input_font_file, output_dir, ligature_font_file, character_f
     print('    ...using characters from %s' % character_font_file)
     charfont = fontforge.open(character_font_file)
 
-    creator = LigatureCreator(font, firacode, charfont, **kwargs)
+    creator = LigatureCreator(font, firacode, charfont, copy_only_characters, **kwargs)
     ligature_length = lambda lig: len(lig['chars'])
     for lig_spec in sorted(ligatures, key = ligature_length):
         try:
@@ -333,7 +338,7 @@ def parse_args():
     parser.add_argument("--character-font-file",
         type=str, default='', metavar='PATH',
         help="The file to copy characters from. If unspecified, ligaturize will"
-             " attempt to pick a suitable one from fonts/fira/distr/otf/ based on the input"
+             " attempt to pick a suitable one from fonts/lilex/ based on the input"
              " font's weight.")
     parser.add_argument("--copy-character-glyphs",
         default=False, action='store_true',
@@ -341,6 +346,10 @@ def parse_args():
              " font as well. This will result in punctuation that matches the"
              " ligatures more closely, but may not fit in as well with the rest"
              " of the font.")
+    parser.add_argument("--copy-only-characters",
+        default=False, action='store_true',
+        help="Copy only character glyphs for (some) individual characters from the character"
+             " font as well. No ligatures will be copied.")
     parser.add_argument("--scale-character-glyphs-threshold",
         type=float, default=0.1, metavar='THRESHOLD',
         help="When copying character glyphs, if they differ in width from the"

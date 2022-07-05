@@ -6,20 +6,21 @@
 
 #### User configurable settings ####
 
-# For the prefixed_fonts below, what word do we stick in front of the font name?
-LIGATURIZED_FONT_NAME_PREFIX = "Lg"
-
 # Should we copy some individual punctuations characters like &, ~, and <>,
 # as well as ligatures? The full list is in ligatures.py.
 # You can also override this (and OUTPUT_DIR) automatically by passing
 # --copy-character-glyphs on the command line.
 COPY_CHARACTER_GLYPHS = True
-
+SHOULD_COPY_ONLY_CHARACTERS = True
 # If copying individual characters, how different in width (relative to the font
 # we're ligaturizing) should they be before we attempt to width-correct them?
 # The default (0.1) means to width-correct if they're +/- 10%. Values >1.0
 # effectively disable this feature.
 SCALE_CHARACTER_GLYPHS_THRESHOLD = 0.1
+
+# For the prefixed_fonts below, what word do we stick in front of the font name?
+LIGATURIZED_FONT_NAME_PREFIX = 'Lg'
+LIGATURIZED_FONT_NAME_PREFIX += 'Ch' if COPY_CHARACTER_GLYPHS else ''
 
 # Where to put the generated fonts.
 OUTPUT_DIR = 'fonts/output/'
@@ -106,9 +107,9 @@ for pattern in prefixed_fonts:
     sys.exit(1)
   for input_file in files:
     ligaturize_font(
-      input_file, ligature_font_file=None, output_dir=OUTPUT_DIR,
+      input_file, ligature_font_file=None, character_font_file=None, output_dir=OUTPUT_DIR,
       prefix=LIGATURIZED_FONT_NAME_PREFIX, output_name=None,
-      copy_character_glyphs=COPY_CHARACTER_GLYPHS,
+      copy_character_glyphs=COPY_CHARACTER_GLYPHS, copy_only_characters=SHOULD_COPY_ONLY_CHARACTERS,
       scale_character_glyphs_threshold=SCALE_CHARACTER_GLYPHS_THRESHOLD)
 
 for pattern,name in renamed_fonts.items():
@@ -118,7 +119,7 @@ for pattern,name in renamed_fonts.items():
     sys.exit(1)
   for input_file in files:
     ligaturize_font(
-      input_file, ligature_font_file=None, output_dir=OUTPUT_DIR,
+      input_file, ligature_font_file=None, character_font_file=None, output_dir=OUTPUT_DIR,
       prefix=None, output_name=name,
-      copy_character_glyphs=COPY_CHARACTER_GLYPHS,
+      copy_character_glyphs=COPY_CHARACTER_GLYPHS, copy_only_characters=SHOULD_COPY_ONLY_CHARACTERS,
       scale_character_glyphs_threshold=SCALE_CHARACTER_GLYPHS_THRESHOLD)

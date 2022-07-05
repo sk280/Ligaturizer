@@ -19,7 +19,7 @@ ligatures = [
             ## These characters are also used by the ligatures, but are likely
             ## to look more out of place when spliced into another font.
              'at', 'braceleft', 'braceright', 'bracketleft', 'bracketright',
-             'dollar', 'parenleft', 'parenright', 'underscore', 'w'
+             'dollar', 'parenleft', 'parenright', 'underscore' #, 'w'
         ],
         'firacode_ligature_name': None,
     },
@@ -195,14 +195,14 @@ ligatures = [
         'chars': ['equal', 'colon', 'equal'],
         'firacode_ligature_name': 'equal_colon_equal.liga',
     },
-    {   # ==
-        'chars': ['equal', 'equal'],
-        'firacode_ligature_name': 'equal_equal.liga',
-    },
-    {   # ===
-        'chars': ['equal', 'equal', 'equal'],
-        'firacode_ligature_name': 'equal_equal_equal.liga',
-    },
+    #{   # ==
+    #    'chars': ['equal', 'equal'],
+    #    'firacode_ligature_name': 'equal_equal.liga',
+    #},
+    #{   # ===
+    #    'chars': ['equal', 'equal', 'equal'],
+    #    'firacode_ligature_name': 'equal_equal_equal.liga',
+    #},
     {   # ==>
         'chars': ['equal', 'equal', 'greater'],
         'firacode_ligature_name': 'equal_equal_greater.liga',
