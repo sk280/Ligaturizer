@@ -11,7 +11,7 @@
 # You can also override this (and OUTPUT_DIR) automatically by passing
 # --copy-character-glyphs on the command line.
 COPY_CHARACTER_GLYPHS = True
-SHOULD_COPY_ONLY_CHARACTERS = True
+SHOULD_COPY_ONLY_CHARACTERS = COPY_CHARACTER_GLYPHS and True
 # If copying individual characters, how different in width (relative to the font
 # we're ligaturizing) should they be before we attempt to width-correct them?
 # The default (0.1) means to width-correct if they're +/- 10%. Values >1.0
@@ -20,7 +20,7 @@ SCALE_CHARACTER_GLYPHS_THRESHOLD = 0.1
 
 # For the prefixed_fonts below, what word do we stick in front of the font name?
 LIGATURIZED_FONT_NAME_PREFIX = 'Lg'
-LIGATURIZED_FONT_NAME_PREFIX += 'Ch' if COPY_CHARACTER_GLYPHS else ''
+LIGATURIZED_FONT_NAME_PREFIX += 'Brc' if COPY_CHARACTER_GLYPHS else ''
 
 # Where to put the generated fonts.
 OUTPUT_DIR = 'fonts/output/'
@@ -46,7 +46,7 @@ prefixed_fonts = [
  # 'fonts/spacemono/fonts/*.ttf',
  # 'fonts/Montserrat/fonts/otf/*.otf',
  # 'fonts/Montserrat/fonts/ttf/*.ttf',
- 'fonts/*.ttf'
+ 'fonts/*.?tf'
 ]
 
 #### Fonts that need to be renamed. ####

@@ -10,16 +10,17 @@ ligatures = [
         'chars': [
             ## These characters generally look good in most fonts and are
             ## enabled by default if you use `--copy-character-glyphs`.
-            'ampersand', 'asciicircum', 'asciitilde', 'asterisk',
-            'backslash', 'bar',
-            'colon', 'equal', 'exclam', 'greater', 'hyphen',
-            'less', 'numbersign', 'percent', 'period', 'plus',
-            'question', 'semicolon', 'slash', 'underscore',
+            #'ampersand', 'asciicircum', 'asciitilde', 'asterisk',
+            #'backslash', 'bar',
+            #'colon', 'equal', 'exclam', 'greater', 'hyphen',
+            #'less', 'numbersign', 'percent', 'period', 'plus',
+            #'question', 'semicolon', 'slash', 'underscore',
 
-            ## These characters are also used by the ligatures, but are likely
-            ## to look more out of place when spliced into another font.
-             'at', 'braceleft', 'braceright', 'bracketleft', 'bracketright',
-             'dollar', 'parenleft', 'parenright', 'underscore' #, 'w'
+            ### These characters are also used by the ligatures, but are likely
+            ### to look more out of place when spliced into another font.
+            # 'at', 'braceleft', 'braceright', 'bracketleft', 'bracketright',
+            # 'dollar', 'parenleft', 'parenright', 'underscore' #, 'w'
+            'braceleft', 'braceright'
         ],
         'firacode_ligature_name': None,
     },
